@@ -35,7 +35,7 @@ export default function UserHeader() {
                 </Flex>
             </Box>
             <Box>
-                <Avatar name='Mark Zukerberg' src='/zuck-avatar.png' size='xl'></Avatar>
+                <Avatar name='Mark Zukerberg' src='/zuck-avatar.png' size={{base: 'lg', sm: 'xl'}}></Avatar>
             </Box>
 
         </Flex>
@@ -43,7 +43,7 @@ export default function UserHeader() {
 
         <Flex w='full' justifyContent='space-between'>
             <Flex gap='2' alignItems={'center'}> 
-                <Text color='gray.light'>3.2k followerd</Text>
+                <Text color='gray.light'>3.2k followers</Text>
                 <Box w='1' h='1' bg={'gray.light'} borderRadius='full'></Box>
                 <Link color='gray.light'>instagram.com</Link>
             </Flex>
