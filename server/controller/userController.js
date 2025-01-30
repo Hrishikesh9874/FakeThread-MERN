@@ -32,23 +32,46 @@ const followUnfollow = async (req, res) => {
 
 
 const updateUser = async (req, res) => {
-	const {name, email, username, password, profilePic, bio} = req.body;
-	const userId = req.user._id;
 	try {
-		const user = await User.findById(userId);
-		if(!user) return res.status(400).json({message: 'User not found!'});
-
-		if(password){
-			const hashedPassword = bcryptjs.hashSync(password, 10);
-			user.password = hashedPassword;
+		if(req.body.password){
+			req.body.password = bcryptjs.hashSync(req.body.password, 10);
 		}
+		const updatedUser = await User.findByIdAndUpdate(req.user.id, {
+            $set: {
+				name: req.body.name,
+                username: req.body.username,
+                email: req.body.email,
+                password: req.body.password,
+                bio: req.body.bio,
+				profilePic: req.body.profilePic
+            }
+        }, {new: true});
+
+		if(!updatedUser){
+			return res.status(400).json({message: 'User not found!'});
+		}
+
+        const { password, ...rest } = updatedUser._doc;
+        res.status(200).json(rest);
 	} catch (error) {
 		res.status(500).json({message: error.message});
 		console.log('Error in updateUser: ', error.message);
 	}
 }
 
+const getUserProfile = async (req, res) => {
+	const {username} = req.params;
+	try {
+		const user = await User.findOne({username}).select("-password").select("-updatedAt");
+		if(!user) return res.status(400).json({message: 'User not found!'});
+		res.status(200).json(user);
+	} catch (error) {
+		res.status(500).json({message: error.message});
+		console.log('Error in getUserProfile: ', error.message);
+	}
+}
 
 
 
-module.exports = {followUnfollow, updateUser};
+
+module.exports = {followUnfollow, updateUser, getUserProfile};
