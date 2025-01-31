@@ -5,13 +5,13 @@ const setCookie = require('../utils/setCookie.js');
 
 const signup = async (req, res) => {
     try {        
-        const {name, email, username, password} = req.body;
-        const user = await User.findOne({$or: [{email}, {username}]});
+        const {name, email, password} = req.body;
+        const user = await User.findOne({email});
 
         if(user){
-            return res.status(400).json({message: 'User already exist!'})
+            return res.status(400).json({message: 'User already exist with this email!'})
         }
-
+        const username = name.split(" ").join("").toLowerCase() + "_" + Math.random().toString(36).slice(-4);
         const hashedPassword = bcryptjs.hashSync(password, 10);
         const newUser = new User({
             name, email, username, password: hashedPassword
@@ -70,7 +70,7 @@ const google = async (req, res) => {
             const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
             const newUser = new User({
                 name: req.body.name,
-                username: req.body.name.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4),
+                username: req.body.name.split(" ").join("").toLowerCase() + "_" + Math.random().toString(36).slice(-4),
                 email: req.body.email,
                 password: hashedPassword
             })

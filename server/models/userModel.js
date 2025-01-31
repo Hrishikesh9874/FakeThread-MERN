@@ -24,11 +24,11 @@ const userSchema = mongoose.Schema({
         default: ''
     },
     followers: {
-        type: [String],
+        type: [mongoose.Schema.Types.ObjectId],
         default: []
     },
     following: {
-        type: [String],
+        type: [mongoose.Schema.Types.ObjectId],
         default: []
     },
     bio: {
