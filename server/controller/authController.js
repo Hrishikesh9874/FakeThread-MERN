@@ -5,7 +5,8 @@ const setCookie = require('../utils/setCookie.js');
 
 const signup = async (req, res) => {
     try {        
-        const {name, email, password} = req.body;
+        const {firstName, lastName, email, password} = req.body;
+        const name = firstName.trim() + ' ' + lastName.trim();
         const user = await User.findOne({email});
 
         if(user){
@@ -32,9 +33,9 @@ const signup = async (req, res) => {
 
 const signin = async (req, res) => {
     try {
-        const {username, password} = req.body;
-        const user = await User.findOne({username});
-        if(!user) return res.status(400).json({message: 'Invalid username!'})
+        const {email, password} = req.body;
+        const user = await User.findOne({email});
+        if(!user) return res.status(400).json({message: 'Invalid email!'})
         const isPassCorrect = await bcryptjs.compare(password, user.password);
         if(!isPassCorrect) return res.status(400).json({message: 'Invalid password!'});
 
@@ -72,6 +73,7 @@ const google = async (req, res) => {
                 name: req.body.name,
                 username: req.body.name.split(" ").join("").toLowerCase() + "_" + Math.random().toString(36).slice(-4),
                 email: req.body.email,
+                profilePic: req.body.profilePic,
                 password: hashedPassword
             })
             await newUser.save();
