@@ -1,8 +1,9 @@
-import {Flex, Box, FormControl, FormLabel, Input, InputGroup, HStack, InputRightElement, Stack, Button, Heading, Text, useColorModeValue, Link } from "@chakra-ui/react";
+import {Flex, Box, FormControl, FormLabel, Input, InputGroup, HStack, InputRightElement, Stack, Button, Heading, Text, useColorModeValue, Link, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../atoms/authAtom";
+import useShowToast from "../hooks/UseShowToast";
 
 export default function SignupCard() {
 
@@ -16,6 +17,8 @@ export default function SignupCard() {
 		password: ""
 	})
 
+	const showToast = useShowToast();
+
 	async function handleSignup(){
 		try {
 			const res = await fetch(`/api/auth/signup`, {
@@ -27,10 +30,15 @@ export default function SignupCard() {
 			});
 
 			const data = await res.json();
-			console.log(data);
+
+			if(data.error){
+				showToast('Error', data.error, 'error');
+				return;
+			}
+			setAuthScreen('login');
 
 		} catch (error) {
-			console.log(error);
+			showToast('Error', error, 'error');
 		}
 	}
 

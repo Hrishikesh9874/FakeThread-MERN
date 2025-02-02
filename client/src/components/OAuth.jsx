@@ -3,11 +3,17 @@ import { FcGoogle } from "react-icons/fc";
 import { app } from "../firebase";
 import {useNavigate} from 'react-router-dom';
 import {GoogleAuthProvider, getAuth, signInWithPopup} from 'firebase/auth';
+import useShowToast from "../hooks/UseShowToast";
+import { useSetRecoilState } from "recoil";
+import userAtom from "../atoms/userAtom";
 
 
 export default function OAuth() {
 
     const navigate = useNavigate();
+    const showToast = useShowToast();
+    const setUser = useSetRecoilState(userAtom);
+
 
     async function handleGoogleClick(){
         try {
@@ -24,10 +30,15 @@ export default function OAuth() {
             })
 
             const data = await res.json();
-            console.log(data);
-            // navigate('/');
+            if(data.error){
+                showToast('Error', data.error, "error");
+            }
+
+            localStorage.setItem('user-threads', JSON.stringify(data));
+            setUser(data);
+            navigate('/');
         } catch (error) {
-            console.log('Could not singin with google: ', error.message);
+            showToast("Error", error, "error");
         }
     }
 

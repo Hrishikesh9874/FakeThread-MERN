@@ -4,12 +4,42 @@ import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import OAuth from "./OAuth";
 import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../atoms/authAtom";
+import useShowToast from "../hooks/UseShowToast";
+import userAtom from "../atoms/userAtom";
+
 
 export default function SigninCard() {
 
     const setAuthScreen = useSetRecoilState(authScreenAtom);
+    const showToast = useShowToast();
+    const setUser = useSetRecoilState(userAtom);
 
     const [showPassword, setShowPassword] = useState(false);
+    const [input, setInput] = useState({
+        email: "", password: ""
+    })
+
+    async function handleLogin(){
+        try {
+            const res = await fetch ('/api/auth/signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(input)
+            })
+            const data = await res.json();
+            if(data.error){
+                showToast('Error', data.error, "error");
+                return;
+            }
+
+            localStorage.setItem('user-threads', JSON.stringify(data));
+            setUser(data);
+        } catch (error) {
+            showToast("Error", error, "error");
+        }
+    }
     
 
     return (
@@ -23,9 +53,11 @@ export default function SigninCard() {
                 <Box w={{base: 'full', sm: '460px'}} rounded={"lg"} bg={useColorModeValue("white", "gray.dark")} boxShadow={"lg"} p={8}>
                     <Stack spacing={4}>
                         <FormControl isRequired>
-                            <FormLabel>Username</FormLabel>
+                            <FormLabel>email</FormLabel>
                             <Input
                                 type='text'
+                                value={input.email}
+                                onChange={(e)=> setInput({...input, email: e.target.value})}
                             />
                         </FormControl>
                         <FormControl isRequired>
@@ -33,6 +65,8 @@ export default function SigninCard() {
                             <InputGroup>
                                 <Input
                                     type={showPassword ? "text" : "password"}
+                                    value={input.password}
+                                    onChange={(e)=> setInput({...input, password: e.target.value})}
                                 />
                                 <InputRightElement h={"full"}>
                                     <Button
@@ -50,6 +84,7 @@ export default function SigninCard() {
                                 size='lg'
                                 bg={useColorModeValue("gray.600", "gray.700")}
                                 color={"white"}
+                                onClick={handleLogin}
                             >
                                 Login
                             </Button>
