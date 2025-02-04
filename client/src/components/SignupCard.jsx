@@ -36,6 +36,7 @@ export default function SignupCard() {
 				return;
 			}
 			setAuthScreen('login');
+			showToast(`Success`, data.message, 'success');
 
 		} catch (error) {
 			showToast('Error', error, 'error');

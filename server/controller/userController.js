@@ -1,5 +1,6 @@
 const User = require('../models/userModel.js');
 const bcryptjs = require('bcryptjs');
+const cloudinary = require('cloudinary');
 
 
 const followUnfollow = async (req, res) => {
@@ -36,6 +37,11 @@ const updateUser = async (req, res) => {
 		if(req.body.password){
 			req.body.password = bcryptjs.hashSync(req.body.password, 10);
 		}
+
+		if(req.body.profilePic){
+			
+		}
+
 		const updatedUser = await User.findByIdAndUpdate(req.user.id, {
             $set: {
 				name: req.body.name,
