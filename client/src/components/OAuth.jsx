@@ -3,7 +3,7 @@ import { FcGoogle } from "react-icons/fc";
 import { app } from "../firebase";
 import {useNavigate} from 'react-router-dom';
 import {GoogleAuthProvider, getAuth, signInWithPopup} from 'firebase/auth';
-import useShowToast from "../hooks/UseShowToast";
+import useShowToast from "../hooks/useShowToast";
 import { useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 

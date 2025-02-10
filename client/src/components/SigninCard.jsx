@@ -4,7 +4,7 @@ import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import OAuth from "./OAuth";
 import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../atoms/authAtom";
-import useShowToast from "../hooks/UseShowToast";
+import useShowToast from "../hooks/useShowToast";
 import userAtom from "../atoms/userAtom";
 
 

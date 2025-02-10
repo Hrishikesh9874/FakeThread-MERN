@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../atoms/authAtom";
-import useShowToast from "../hooks/UseShowToast";
+import useShowToast from "../hooks/useShowToast";
 
 export default function SignupCard() {
 
