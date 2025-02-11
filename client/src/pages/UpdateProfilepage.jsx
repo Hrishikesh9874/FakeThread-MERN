@@ -54,8 +54,8 @@ export default function UpdateProfilePage() {
           
         })
         const data = await res.json();
-        if(data.message === 'Unauthorized'){
-          showToast('Error', 'You are not signed inn', 'error');
+        if(data.error){
+          showToast('Error', data.error, 'error');
           return;
         }
         setUser(data);
