@@ -12,7 +12,7 @@ export default function UserHeader({user}) {
 
     const toast = useToast();
     const currentUser = useRecoilValue(userAtom);
-    const [following, setFollowing] = useState(user.followers.includes(currentUser._id));
+    const [following, setFollowing] = useState(currentUser ? user.followers.includes(currentUser._id) : false);
     const showToast = useShowToast();
     const [updating, setUpdating] = useState(false);
 
@@ -89,12 +89,12 @@ export default function UserHeader({user}) {
         </Flex>
         <Text>{user.bio}</Text>
 
-        {currentUser._id === user._id &&(
+        {currentUser && currentUser._id === user._id &&(
             <RouterLink to='/update'>
                 <Button size='sm'>Update Profile</Button>
             </RouterLink>
         )}
-        {currentUser._id !== user._id &&(
+        {currentUser && currentUser._id !== user._id &&(
             <Button onClick={handleFollow} size='sm' isLoading={updating}>{following ? 'Unfollow' : 'Follow'}</Button>
         )}
 

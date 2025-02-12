@@ -9,25 +9,25 @@ const createPost = async (req, res) => {
     if (!text) {
       res
         .status(400)
-        .json({ message: "Postedby and text fields are required!" });
+        .json({ error: "Text filed is required!" });
     }
 
     const user = await User.findById(req.user.id);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ error: "User not found" });
     }
 
     if (text.length > 500) {
       return res
         .status(400)
-        .json({ message: "Text must be less than 500 characters" });
+        .json({ error: "Text must be less than 500 characters" });
     }
 
     const postedBy = req.user.id;
     const newPost = new Post({ postedBy, text, img });
     await newPost.save();
 
-    res.status(201).json({ message: "Posts created successfully!", newPost });
+    res.status(201).json({ message: "Post created successfully!", newPost });
   } catch (error) {
     res.status(500).json({ message: error.message });
     console.log("Error in creating post: ", error.message);
