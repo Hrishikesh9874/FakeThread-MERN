@@ -1,7 +1,69 @@
-import { Flex } from "@chakra-ui/react";
+import { Box, Button, Flex, FormControl, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react";
+import { useState } from "react";
+import {useRecoilValue} from 'recoil';
+import userAtom from '../atoms/userAtom';
+import useShowToast from "../hooks/useShowToast";
 
-export default function Actions({ liked, setLiked }) {
+export default function Actions({ post, setPost }) {
+  
+  const user = useRecoilValue(userAtom)
+  const [liked, setLiked] = useState(post.likes.includes(user?._id));
+  const showToast = useShowToast();
+  const {isOpen, onOpen, onClose} = useDisclosure();
+  const [reply, setReply] = useState('');
+
+
+  async function handleLikeUnlike(){
+    if(!user) return showToast('Error', 'Please login to like', 'error');
+    try {
+      const res = await fetch(`/api/post/like/${post._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      if(data.error){
+        showToast('Error', data.error, 'error');
+        return;
+      }
+      if(!liked){
+        setPost({...post, likes: [...post.likes, user._id]});
+      }else{
+        setPost({...post, likes: post.likes.filter(id => id !== user._id)});
+      }
+      setLiked(!liked);
+    } catch (error) {
+      showToast('Error', error.message, 'error');
+    }
+  }
+
+  async function handleReply(){
+    if(!user) return showToast('Error', 'Please login to reply', 'error');
+    try {
+      const res = await fetch(`/api/post/reply/${post._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({text: reply})
+      });
+      const data = await res.json();
+      if(data.error){
+        showToast('Error', data.error, 'error');
+        return;
+      }
+      setPost({...post, replies: [...post.replies, data.reply]});
+      showToast('Success', 'replied successfully!!', 'success');
+      onClose();
+      setReply('');
+    } catch (error) {
+      showToast('Error', error.message, 'error');
+    }
+  }
+
   return (
+  <Flex flexDirection='column'>
     <Flex gap="3" my="2" onClick={(e) => e.preventDefault()}>
 
       <svg
@@ -12,7 +74,8 @@ export default function Actions({ liked, setLiked }) {
         role="img"
         viewBox="0 0 24 22"
         width="20"
-        onClick={()=>setLiked(!liked)}
+        onClick={handleLikeUnlike}
+        style={{cursor: 'pointer'}}
       >
         <path
           d="M1 7.66c0 4.575 3.899 9.086 9.987 12.934.338.203.74.406 1.013.406.283 0 .686-.203 1.013-.406C19.1 16.746 23 12.234 23 7.66 23 3.736 20.245 1 16.672 1 14.603 1 12.98 1.94 12 3.352 11.042 1.952 9.408 1 7.328 1 3.766 1 1 3.736 1 7.66Z"
@@ -29,6 +92,8 @@ export default function Actions({ liked, setLiked }) {
         role="img"
         viewBox="0 0 24 24"
         width="20"
+        style={{cursor: 'pointer'}}
+        onClick={onOpen}
       >
         <title>Comment</title>
         <path
@@ -48,6 +113,7 @@ export default function Actions({ liked, setLiked }) {
         role="img"
         viewBox="0 0 24 24"
         width="20"
+        style={{cursor: 'pointer'}}
       >
         <title>Repost</title>
         <path
@@ -64,6 +130,7 @@ export default function Actions({ liked, setLiked }) {
         role="img"
         viewBox="0 0 24 24"
         width="20"
+        style={{cursor: 'pointer'}}
       >
         <title>Share</title>
         <line
@@ -86,5 +153,37 @@ export default function Actions({ liked, setLiked }) {
       </svg>
 
     </Flex>
+
+      <Flex gap="2" alignItems="center">
+        <Text color="gray.light" fontSize="sm">
+          {post.replies.length} replies
+        </Text>
+        <Box w="0.5" h="0.5" borderRadius="full" bg="gray.light" />
+        <Text color="gray.light" fontSize="sm">
+          {post.likes.length} likes
+        </Text>
+      </Flex>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay/>
+          <ModalContent>
+
+            <ModalHeader></ModalHeader>
+            <ModalCloseButton/>
+
+            <ModalBody pb='6'>
+              <FormControl>
+                <Input value={reply} onChange={(e)=> setReply(e.target.value)} placeholder="Reply goes here..." />
+              </FormControl>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button onClick={handleReply} colorScheme='blue' mr='3' size='sm'>Reply</Button>
+            </ModalFooter>
+
+          </ModalContent>
+      </Modal>
+
+  </Flex>
   );
 }
