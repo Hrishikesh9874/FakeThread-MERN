@@ -39,12 +39,12 @@ const getPost = async (req, res) => {
     const post = await Post.findById(req.params.id);
 
     if (!post) {
-      return res.status(404).json("message: 'Post not found");
+      return res.status(404).json({error: 'Post not found'});
     }
 
-    res.status(200).json({ post });
+    res.status(200).json( post );
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 }
 
@@ -52,7 +52,7 @@ const deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) {
-      return res.status(404).json({ message: "Post not found!" });
+      return res.status(404).json({ error: "Post not found!" });
     }
 
     if (post.postedBy.toString() !== req.user.id.toString()) {
@@ -64,7 +64,7 @@ const deletePost = async (req, res) => {
     await Post.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Post deleted successfully!" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 }
 
@@ -138,6 +138,35 @@ const getFeedPosts = async (req, res) => {
     }
 }
 
+const getUserPosts = async (req, res) => {
+  const username = req.params.username;
+  try {
+    const user = await User.findOne({username});
+    if(!user){
+      return res.status(404).json({error: 'user not found!'});
+    }
+    const posts = await Post.find({postedBy: user._id}).sort({createdAt: -1});
+    res.status(200).json(posts);
+  } catch (error) {
+    res.status(500).json({error: error.message});
+  }
+}
+
+const deleteReply = async (req, res) => {
+  try {
+    const replyId = req.params.id;
+    const post = await Post.findOne({'replies._id': replyId});
+    if (!post) {
+      return res.status(404).json({ error: 'Post with the given reply not found' });
+    }    
+    post.replies = post.replies.filter(reply => reply._id.toString() !== replyId);
+    await post.save();
+    res.status(200).json({ message: 'Reply deleted successfully' });
+  } catch (error) {
+    res.status(500).json({error: error.message});
+  }
+}
+
 
 module.exports = {
   createPost,
@@ -145,5 +174,7 @@ module.exports = {
   deletePost,
   likeUnlikePost,
   replyToPost,
-  getFeedPosts
+  getFeedPosts,
+  getUserPosts,
+  deleteReply
 };

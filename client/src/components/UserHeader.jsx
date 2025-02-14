@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { VStack, Flex, Box, Text, Avatar, Link, useToast, Center } from '@chakra-ui/react'
+import { VStack, Flex, Box, Text, Avatar, Link, useToast } from '@chakra-ui/react'
 import { BsInstagram } from 'react-icons/bs';
 import { CgMoreO } from 'react-icons/cg';
 import { Menu, MenuButton, MenuList, MenuItem, Portal, Button } from "@chakra-ui/react";

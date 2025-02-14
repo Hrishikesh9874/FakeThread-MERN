@@ -42,7 +42,7 @@ export default function HomePage() {
         </Flex>
       )}
 
-      {!loading && posts.length === 0 && <h1>Follow some users to see the feed</h1> }
+      {!loading && posts.length === 0 && <h1>Follow some users to see the feed...</h1> }
 
       {posts.map((post)=>(
         <Post key={post._id} post={post} />

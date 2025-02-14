@@ -4,13 +4,14 @@ import {useRecoilValue} from 'recoil';
 import userAtom from '../atoms/userAtom';
 import useShowToast from "../hooks/useShowToast";
 
-export default function Actions({ post, setPost }) {
+export default function Actions({ post: post_ }) {
   
+  const [post, setPost] = useState(post_);
   const user = useRecoilValue(userAtom)
   const [liked, setLiked] = useState(post.likes.includes(user?._id));
   const showToast = useShowToast();
   const {isOpen, onOpen, onClose} = useDisclosure();
-  const [reply, setReply] = useState('');
+  const [reply, setReply] = useState('');  
 
 
   async function handleLikeUnlike(){

@@ -1,19 +1,39 @@
-import {Link, useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import { Flex, Avatar, Box, Text, Image } from '@chakra-ui/react';
 import Actions from './Actions';
 import { useEffect, useState } from 'react';
 import useShowToast from '../hooks/useShowToast';
 import {formatDistanceToNow} from 'date-fns';
+import {DeleteIcon} from '@chakra-ui/icons';
+import { useRecoilValue } from 'recoil';
+import userAtom from '../atoms/userAtom';
 
 export default function Post({post: initialPost}) {
 
     const userId = initialPost.postedBy;
     const [post, setPost] = useState(initialPost);
-    const [liked, setLiked] = useState(false);
     const showToast = useShowToast();
     const [user, setUser] = useState(null);
     const navigate = useNavigate()
+    const currentUser = useRecoilValue(userAtom);
 
+
+    async function handleDeletePost(){
+        try {
+            if(!window.confirm('Are you sure you want to delete this post?')) return;
+            const res = await fetch(`/api/post/${post._id}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if(data.error){
+                showToast('Error', data.error, 'error');
+                return;
+            }
+            showToast('Success', 'Post deleted!', 'success');
+        } catch (error) {
+            showToast('Error', error.message, 'error');
+        }
+    }
 
     useEffect(()=>{
         async function getUser(){
@@ -55,6 +75,9 @@ export default function Post({post: initialPost}) {
                     </Flex>
                     <Flex gap='4' alignItems='center'>
                         <Text fontSize='xs' width='36' textAlign='right' color='gray.light' >{formatDistanceToNow(new Date(post.createdAt)).replace('about ', '')} ago</Text>
+                        {currentUser?._id === user?._id && (
+                            <DeleteIcon onClick={handleDeletePost} style={{cursor: 'pointer'}} />
+                        )}
                     </Flex>
                 </Flex>
                 <Text style={{ cursor: 'pointer' }} onClick={()=>{navigate(`/${user?.username}/post/${post._id}`)}} fontSize='sm'>{post.text}</Text>
