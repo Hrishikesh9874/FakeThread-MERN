@@ -2,14 +2,19 @@ import { Avatar, Flex, Text, Divider, Menu, Box, Portal, MenuList, MenuItem, Men
 import { BsThreeDots } from "react-icons/bs";
 import { formatDistanceToNow } from "date-fns";
 import useShowToast from "../hooks/useShowToast";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
+import { useNavigate, useParams } from "react-router-dom";
+import postsAtom from "../atoms/postsAtom";
 
 
 export default function Comment({reply, lastReply}) {
 
     const showToast = useShowToast();
     const currentUser = useRecoilValue(userAtom);
+    const navigate = useNavigate();
+    const {pid} = useParams();
+    const [posts, setPosts] = useRecoilState(postsAtom);
 
     async function handleDelete(){
         try {
@@ -22,6 +27,13 @@ export default function Comment({reply, lastReply}) {
                 return;
             }
             showToast('Success', data.message, 'success');
+            const updatedPosts = posts.map((p) => {
+                if(p._id === pid){
+                    return { ...p, replies: p.replies.filter((r) => r._id !== reply._id) }
+                }
+                return p;
+            });
+            setPosts(updatedPosts);
         } catch (error) {
             showToast('Error', error.message, 'error');
         }
@@ -30,12 +42,12 @@ export default function Comment({reply, lastReply}) {
   return (
     <>
         <Flex gap='2' py='2' my='2' w='full'>
-            <Avatar style={{marginTop: '2px'}} src={reply.userProfilePic} size='sm' />
+            <Avatar style={{ cursor: 'pointer', marginTop: '2px' }} onClick={()=>{navigate(`/${reply.username}`)}} src={reply.userProfilePic} size='sm' />
             <Flex gap='1' w='full' flexDirection='column'>
                 <Flex w='full' justifyContent='space-between' alignItems='center'>
-                    <Text fontSize='sm' fontWeight='bold'>{reply.username}</Text>
+                    <Text style={{ cursor: 'pointer' }} onClick={()=>{navigate(`/${reply.username}`)}} fontSize='sm' fontWeight='bold'>{reply.username}</Text>
                     <Flex gap='2' alignItems='center'>
-                        <Text fontSize='sm' color='gray.light'>{formatDistanceToNow(new Date(reply.createdAt)).replace('about ', '')} ago</Text>
+                        <Text fontSize='sm' color='gray.light'>{formatDistanceToNow(new Date(reply?.createdAt)).replace('about ', '')} ago</Text>
                         {currentUser && (
                             <Box mt='-1'>
                             <Menu>

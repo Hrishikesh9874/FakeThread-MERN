@@ -5,17 +5,18 @@ import { useEffect, useState } from 'react';
 import useShowToast from '../hooks/useShowToast';
 import {formatDistanceToNow} from 'date-fns';
 import {DeleteIcon} from '@chakra-ui/icons';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import userAtom from '../atoms/userAtom';
+import postsAtom from '../atoms/postsAtom';
 
-export default function Post({post: initialPost}) {
+export default function Post({post}) {
 
-    const userId = initialPost.postedBy;
-    const [post, setPost] = useState(initialPost);
+    const userId = post.postedBy;
     const showToast = useShowToast();
     const [user, setUser] = useState(null);
     const navigate = useNavigate()
     const currentUser = useRecoilValue(userAtom);
+    const [posts, setPosts] = useRecoilState(postsAtom);
 
 
     async function handleDeletePost(){
@@ -30,6 +31,7 @@ export default function Post({post: initialPost}) {
                 return;
             }
             showToast('Success', 'Post deleted!', 'success');
+            setPosts(posts.filter((p)=> p._id !== post._id));
         } catch (error) {
             showToast('Error', error.message, 'error');
         }
@@ -85,7 +87,7 @@ export default function Post({post: initialPost}) {
                     <Image src={post.img} w='full' />
                 </Box>) : ''}
                 <Flex gap='3' my='1'>
-                    <Actions post={post} setPost={setPost}/>
+                    <Actions post={post}/>
                 </Flex>                
             </Flex>
 

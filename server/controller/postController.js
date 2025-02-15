@@ -1,5 +1,6 @@
 const User = require("../models/userModel.js");
 const Post = require("../models/postModel.js");
+const mongoose = require("mongoose");
 
 
 const createPost = async (req, res) => {
@@ -110,7 +111,7 @@ const replyToPost = async (req, res) => {
       return res.status(404).json({ error: "Post not found" });
     }
 
-    const reply = { userId, text, userProfilePic, username };
+    const reply = { _id: new mongoose.Types.ObjectId(), userId, text, userProfilePic, username, createdAt: new Date() };
 
     post.replies.push(reply);
     post.save();

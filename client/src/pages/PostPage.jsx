@@ -7,19 +7,20 @@ import useShowToast from '../hooks/useShowToast';
 import { useNavigate, useParams } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { DeleteIcon } from '@chakra-ui/icons';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import userAtom from '../atoms/userAtom';
+import postsAtom from '../atoms/postsAtom';
 
 export default function PostPage() {
 
   const {user, loading} = useGetUserProfile();
-  const [post, setPost] = useState(null);
   const showToast = useShowToast();
   const {pid} = useParams();
   const currentUser = useRecoilValue(userAtom);
   const navigate = useNavigate();
+  const [posts, setPosts] = useRecoilState(postsAtom);
 
-
+  const post = posts[0];
   async function handleDeletePost(){
     try {
       if(!window.confirm('Are you sure you want to delete the post?')) return;
@@ -46,7 +47,7 @@ export default function PostPage() {
         showToast('Error', data.error, 'error');
         return;
       }
-      setPost(data);
+      setPosts([data]);
     } catch (error) {
       showToast('Error', error.message, 'error');
     }
@@ -96,7 +97,7 @@ export default function PostPage() {
       )}
 
       <Flex gap='3' my='3'>
-        <Actions post={post} setPost={setPost} />
+        <Actions post={post} />
       </Flex>
 
       <Divider my='4' />
@@ -113,8 +114,8 @@ export default function PostPage() {
 
       <Divider my='4'/>
 
-      {post.replies.map(reply => (
-        <Comment key={reply._id} reply={reply} lastReply={reply._id === post.replies[post.replies.length - 1]._id} />
+      {post.replies.map((reply, index) => (
+        <Comment key={reply._id || index} reply={reply} lastReply={reply._id === post.replies[post.replies.length - 1]._id} />
       ))}
 
     </>

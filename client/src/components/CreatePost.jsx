@@ -3,6 +3,10 @@ import { Button, CloseButton, Flex, FormControl, Image, Input, Modal, ModalBody,
 import { useEffect, useRef, useState } from "react";
 import {BsFillImageFill} from 'react-icons/bs';
 import useShowToast from "../hooks/useShowToast";
+import { useRecoilState, useRecoilValue } from "recoil";
+import userAtom from "../atoms/userAtom";
+import { useParams } from "react-router-dom";
+import postsAtom from "../atoms/postsAtom";
 
 const maxChar = 500;
 
@@ -16,6 +20,9 @@ export default function CreatePost() {
     const showToast = useShowToast();
     const [remainingCharacters, setRemainingCharacters] = useState(maxChar);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const currentUser = useRecoilValue(userAtom);
+    const {username} = useParams();
+    const [posts, setPosts] = useRecoilState(postsAtom);
 
 
     function handleTextChange(e){
@@ -49,6 +56,7 @@ export default function CreatePost() {
             onClose();
             setImgUrl('');
             setPostText('');
+            setPosts([data.newPost, ...posts]);
         } catch (error) {
             showToast('Error', error, 'error');
         }
@@ -91,9 +99,13 @@ export default function CreatePost() {
         }
     }, [file])
 
+    if(currentUser.username !== username){
+        return null;
+    }
+
   return (
     <>
-        <Button onClick={onOpen} position='fixed' bottom='10' right='10' leftIcon={<AddIcon/>} bg={useColorModeValue('gray.300', 'gray.dark')}>Post</Button>
+        <Button onClick={onOpen} position='fixed' bottom='10' right='10' size={{base: 'sm', sm: 'md'}} bg={useColorModeValue('gray.300', 'gray.dark')}><AddIcon/></Button>
 
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay/>
