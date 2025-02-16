@@ -40,6 +40,7 @@ export default function PostPage() {
   }
 
   async function getPost(){
+    setPosts([]);
     try {
       const res = await fetch(`/api/post/${pid}`);
       const data = await res.json();
