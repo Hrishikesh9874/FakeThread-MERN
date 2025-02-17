@@ -1,6 +1,7 @@
 const User = require('../models/userModel.js');
 const bcryptjs = require('bcryptjs');
 const mongoose = require('mongoose');
+const Post = require('../models/postModel.js');
 
 
 const followUnfollow = async (req, res) => {
@@ -54,6 +55,18 @@ const updateUser = async (req, res) => {
 		}
 
         const { password, ...rest } = updatedUser._doc;
+
+		await Post.updateMany(
+			{'replies.userId': req.user.id},
+			{
+				$set: {
+					"replies.$[reply].username": rest.username,
+					"replies.$[reply].userProfilePic": rest.profilePic
+				}
+			},
+			{arrayFilters: [{"reply.userId": req.user.id}]}
+		)
+
         res.status(200).json(rest);
 	} catch (error) {
 		res.status(500).json({error: error.message});
