@@ -1,0 +1,23 @@
+import { Avatar, AvatarBadge, Flex, Image, Stack, Text, useColorModeValue, WrapItem } from '@chakra-ui/react'
+import React from 'react'
+
+export default function Conversation() {
+  return (
+    <Flex gap='4' alignItems='center' p='1' _hover={{cursor: 'pointer', bg: useColorModeValue('gray.600', 'gray.dark'), color: 'white'}} borderRadius='md'>
+
+        <WrapItem>
+            <Avatar size={{base: 'xs', sm: 'sm', md: 'md'}} src='data:image/jpeg;base64,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'>
+              <AvatarBadge boxSize='1em' bg='green'/>
+             </Avatar>
+        </WrapItem>
+
+        <Stack direction='column' fontSize='sm'>
+            <Text fontWeight='700' display='flex' alignItems='center'>
+              johndoe <Image src='/verified.png' w='4' h='4' ml='1' />
+            </Text>
+            <Text fontSize='xs' display='flex' alignItems='center' gap='1'>Hello, Some message...</Text>
+        </Stack>
+
+    </Flex>
+  )
+}
