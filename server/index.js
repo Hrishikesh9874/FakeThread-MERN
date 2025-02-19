@@ -6,6 +6,7 @@ const authRoute = require('./routes/authRoute.js');
 const userRoute = require('./routes/userRoute.js');
 const postRoute = require('./routes/postRoute.js');
 const cloudinary = require('cloudinary');
+const messageRoute = require('./routes/messageRoute.js');
 
 
 const app = express();
@@ -28,6 +29,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRoute);
 app.use('/api/user', userRoute);
 app.use('/api/post', postRoute);
+app.use('/api/message', messageRoute);
 
 
 app.listen(process.env.PORT, ()=> console.log(`Server is running on localhost ${process.env.PORT}`))
